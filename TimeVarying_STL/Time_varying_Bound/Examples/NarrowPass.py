@@ -61,8 +61,7 @@ def test():
                         (-5.5,9,-3.8,5.7),
                         (-4.6,8,-0.5,3.5),
                         (-2.2,4.4,-6.4,10)], dtype = np.float64)
-    # charges = np.array([(-7,8,-8,9),
-    #                 (-9.5,10.5,-1.5,2.5)], dtype = np.float64)
+
 
     charges = np.array([(-6,7,-7,8),
                         (-8.5,9.5,-2,3)], dtype = np.float64)
@@ -110,7 +109,7 @@ def test():
     log_name = f"narrow_pass_BezierPoints_1norm_T{T}"
     solver = GurobiPlan(x0s, specs, limits, goals=goals, num_segs=num_segs, tmax=T, 
                         vel_max=vmax, acc_max=amax, rho_min=rho_min, cost_param=cost_param, 
-                        MIPGap=0.1, log_name=log_name) # MIPGap=1e-2 if T=20
+                        MIPGap=0.1, log_name=log_name) 
     PWP, rho, Bezier = solver.Solve()
 
     if Bezier[0] is not None: 
