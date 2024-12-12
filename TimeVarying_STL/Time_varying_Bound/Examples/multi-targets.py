@@ -27,8 +27,8 @@ def test():
     amax = 1
     num_segs = 20
     rho_min = 0.3
-    Q=1e3
-    R=1e3
+    Q=1e2
+    R=1e2
     W=1
 
 
@@ -72,10 +72,10 @@ def test():
         center = np.array(center, dtype=np.float64)
         x_center, y_center = center
         b = scale * np.array([
-            -(x_center + min_lim[0]),  # 左边界
-            (x_center + max_lim[0]),   # 右边界
-            -(y_center + min_lim[1]),  # 下边界
-            (y_center + max_lim[1])    # 上边界
+            -(x_center + min_lim[0]),  # left
+            (x_center + max_lim[0]),   # right
+            -(y_center + min_lim[1]),  # bottom
+            (y_center + max_lim[1])    # upper
         ], dtype=np.float64)
     
         Bs.append(b)
@@ -159,7 +159,7 @@ def test():
 
     cost_param=[Q, R, W]
     log_name = f"multi_targets_BezierPoints_1norm_T{T}"
-    solver = GurobiPlan(x0s, specs, limits, goals, num_segs=num_segs, tmax=T, MIPGap=0.3, # 0.1 if T = 20
+    solver = GurobiPlan(x0s, specs, limits, goals, num_segs=num_segs, tmax=T, MIPGap=0.4,
                         vel_max=vmax, acc_max=amax, rho_min=rho_min, cost_param=cost_param, 
                         log_name=log_name)
     PWP, rho, Bezier = solver.Solve()
