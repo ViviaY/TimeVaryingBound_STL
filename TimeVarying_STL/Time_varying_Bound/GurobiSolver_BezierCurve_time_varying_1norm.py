@@ -26,7 +26,7 @@ class GurobiPlan(object):
         self.num_segs = num_segs
         self.num_states = num_segs+1
         self.dims = 2 # x,y
-        self.order = 6
+        self.order = 8
         self.x0 = x0s[0]
         self.limits = limits
         self.specs = specs
@@ -104,9 +104,6 @@ class GurobiPlan(object):
         self.rho = self.model.addVars(self.num_segs, name="rho", lb=0.0)  #lb sets minimu m robustness
         self.rho_Bezier = self.model.addVars(self.num_segs, name="rho_Bezier", lb=0.0)  #lb sets minimu m robustness
         self.deviation_a = self.model.addVars(self.num_segs, name="deviation_a", lb=0.0)  #lb sets minimu m robustness
-        self.deviation_v = self.model.addVars(self.num_segs, name="deviation_v", lb=0.0)  #lb sets minimu m robustness
-
-        
 
 
 
@@ -168,7 +165,7 @@ class GurobiPlan(object):
     
                 self.model.addConstr(self.vel_abs[n][i] <= self.vel_max, name=f"vel<vel_max_{n}")
 
-                self.model.addConstr(self.acc_abs[n][i] <= 8*self.deviation_a[n]/(math.sqrt(self.order)*self.dt**2), name=f"acc_m>acc_min_{n}")
+                self.model.addConstr(self.acc_abs[n][i] <= 8*self.deviation_a[n]/(math.sqrt(self.dims)*self.dt**2), name=f"acc_m>acc_min_{n}")
 
                 self.model.addConstr(self.acc_abs[n][i] <= self.acc_max, name=f"acc<acc_max_{n}")
 
@@ -207,9 +204,9 @@ class GurobiPlan(object):
                 if j == 0 or j==n-1:
                     self.model.addConstrs((self.Bezier[i][j+1][k] - self.Bezier[i][j][k] <= self.acc[i][k]*self.dt**2/(n) for k in range(self.dims)), name=f'constr_vel_{i}{0}')
                     self.model.addConstrs((self.Bezier[i][j+1][k] - self.Bezier[i][j][k] >= -self.acc[i][k]*self.dt**2/(n) for k in range(self.dims)), name=f'constr_vel_{i}{0}')
-                else:
-                    self.model.addConstrs((self.Bezier[i][j+1][k] - self.Bezier[i][j][k] <= self.vel[i][k]*self.dt/(n) for k in range(self.dims)), name=f'constr_vel0_{i}{j}')
-                    self.model.addConstrs((self.Bezier[i][j+1][k] - self.Bezier[i][j][k] >= -self.vel[i][k]*self.dt/(n) for k in range(self.dims)), name=f'constr_vel1_{i}{j}')
+                
+                self.model.addConstrs((self.Bezier[i][j+1][k] - self.Bezier[i][j][k] <= self.vel[i][k]*self.dt/(n) for k in range(self.dims)), name=f'constr_vel0_{i}{j}')
+                self.model.addConstrs((self.Bezier[i][j+1][k] - self.Bezier[i][j][k] >= -self.vel[i][k]*self.dt/(n) for k in range(self.dims)), name=f'constr_vel1_{i}{j}')
         
 
             for j in range(n-1):
